@@ -1,0 +1,2 @@
+# slotmachine
+Simple slot machine
