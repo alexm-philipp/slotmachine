@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Slots</title>
+        <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+
+        
+    </head>
+    <body>
+        <div id = "app"></div>
+
+        <script type = "text/babel">
+
+            function App(){
+
+                const [result, setResult] = React.useState({
+                    one: Math.ceil(Math.random() * 3),
+                    two: Math.ceil(Math.random() * 3),
+                    three: Math.ceil(Math.random() * 3),
+                    balance: 100,
+                    bet_size: 0,
+                    error: ""
+                    });
+
+                const [isSpin, setIsSpin] = React.useState(false);
+
+                const[saveSize, setSaveSize] = React.useState(0);
+
+                const bolt = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                            </svg>
+                const battery = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 10.5h.375c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125H21M4.5 10.5h6.75V15H4.5v-4.5zM3.75 18h15A2.25 2.25 0 0021 15.75v-6a2.25 2.25 0 00-2.25-2.25h-15A2.25 2.25 0 001.5 9.75v6A2.25 2.25 0 003.75 18z" />
+                                </svg>
+                const beaker = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                                </svg>
+                
+                const symbolArray = ["blank", bolt, battery, beaker];
+
+
+
+
+                function cancelBet(){
+                    setResult({
+                        ...result,
+                        balance: result.balance + result.bet_size,
+                        bet_size: 0,
+                        error: ""
+                    });
+                }
+
+                function addBet(e){
+                    if (result.balance > 0){ 
+                        setResult({
+                            ...result,
+                            bet_size: result.bet_size + parseInt(e.target.id),
+                            balance: result.balance - parseInt(e.target.id),
+                            error: ""
+                        });
+                    }
+
+                    if (result.balance - parseInt(e.target.id) < 0){
+                        setResult({
+                            ...result,
+                            error: "NOT ENOUGH MONEY"
+                        })
+                    }
+                }
+
+                function spin(){
+                    setSaveSize(result.bet_size);
+                    setResult({
+                        one: Math.ceil(Math.random() * 3),
+                        two: Math.ceil(Math.random() * 3),
+                        three: Math.ceil(Math.random() * 3),
+                        bet_size: 0,
+                        balance: result.balance
+                    });
+                    setIsSpin(true);
+                }
+
+                React.useEffect(() => {
+                    //RESULTS ARE ALL THE SAME
+                    if (result.one === 1 && result.two === 1 && result.three === 1 && isSpin){
+                        const weighted_add = saveSize * 22
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    if (result.one === 2 && result.two === 2 && result.three === 2 && isSpin){
+                        const weighted_add = saveSize * 22
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    if (result.one === 3 && result.two === 3 && result.three === 3 && isSpin){
+                        const weighted_add = saveSize * 22
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    //RESULTS ARE ALL DIFFERENT
+                    if (result.one === 1 && result.two === 2 && result.three === 3 && isSpin){
+                        const weighted_add = saveSize * 2
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    if (result.one === 2 && result.two === 3 && result.three === 1 && isSpin){
+                        const weighted_add = saveSize * 2
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    if (result.one === 3 && result.two === 1 && result.three === 2 && isSpin){
+                        const weighted_add = saveSize * 2
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    if (result.one === 3 && result.two === 2 && result.three === 1 && isSpin){
+                        const weighted_add = saveSize * 2
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    if (result.one === 2 && result.two === 1 && result.three === 3 && isSpin){
+                        const weighted_add = saveSize * 2
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    if (result.one === 1 && result.two === 3 && result.three === 2 && isSpin){
+                        const weighted_add = saveSize * 2
+                        setResult(prevResult => ({ ...prevResult, balance: result.balance + weighted_add}));
+                    }
+                    setIsSpin(false);
+                });
+
+                function plus(){
+                    if (result.balance > 0 && result.bet_size > -1) {
+                        setResult({
+                            ...result,
+                            balance: result.balance - 1,
+                            bet_size: result.bet_size + 1
+                        });
+                    }
+                }
+
+                function minus(){
+                    if (result.bet_size > 0) {
+                        setResult({
+                            ...result,
+                            balance: result.balance + 1,
+                            bet_size: result.bet_size - 1,
+                            error:""
+                        });
+                    }
+                }
+                
+                return (
+                    <div className ="flex justify-center items-center h-screen bg-gray-100">
+                        <div className ="m-8 border rounded-lg shadow-lg p-8 bg-white">
+                        <div className ="flex justify-center items-center space-x-4">
+                        <div className ="w-16 h-16 rounded-full border-2 border-gray-600 flex justify-center items-center ">
+                            <h1 className="wheel">{symbolArray[result.one]}</h1>
+                        </div>
+                        <div className ="w-16 h-16 rounded-full border-2 border-gray-600 flex justify-center items-center ">
+                            <h1 className="wheel">{symbolArray[result.two]}</h1>
+                        </div>
+                        <div className ="w-16 h-16 rounded-full border-2 border-gray-600 flex justify-center items-center">
+                            <h1 className="wheel">{symbolArray[result.three]}</h1>
+                        </div>
+                        </div>
+                        <h3 className ="text-center text-2xl font-bold mt-8">BALANCE: {result.balance}</h3>
+                        <h4 className ="text-center text-xl font-medium mt-4">BET SIZE: {result.bet_size}</h4>
+                        <div className ="flex justify-center mt-8">
+                        <button className ="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={plus}>+</button>
+                        <button className ="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={minus}>-</button>
+                        </div>
+                        <div className ="flex justify-center items-center mt-8">
+                        <button className ="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={cancelBet}>CANCEL BET</button>
+                        <h5 className ="mx-4">PLACE BET:</h5>
+                        <button className ="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={addBet} id="1">$1</button>
+                        <button className ="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={addBet} id="5">$5</button>
+                        <button className ="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={addBet} id="10">$10</button>
+                        <button className ="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={addBet} id="20">$20</button>
+                        <button className ="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mx-2" onClick={addBet} id="50">$50</button>
+                        </div>
+                        <div className ="flex justify-center mt-8">
+                        <button className ="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full w-60 h-12" onClick={spin} disabled={result.bet_size === 0}>SPIN</button>
+                        </div>
+                        <h4 className ="text-center text-red-500 font-medium mt-4">{result.error}</h4>
+                    </div>
+                </div>
+
+                );
+            }
+
+            ReactDOM.render(<App />, document.querySelector('#app'));
+        </script>
+
+    </body>
+</html>
